@@ -44,7 +44,7 @@ fn post_person(person_json: Json<PostPerson>) -> Json<Response> {
     }
 }
 
-// curl -i -X PUT http://127.0.0.1:8000/modify/1\?name\=Peponcio\&age\=22
+// curl -i -X PUT 'http://127.0.0.1:8000/modify/1?name=Peponcio'
 #[put("/modify/<id>?<name>&<age>")]
 fn modify_person(id: i32, name: Option<String>, age: Option<i32>) -> Json<Response> {
     let mut conn = pool().get().unwrap();
@@ -77,6 +77,25 @@ fn can_not_parse_json(status: Status, req: &Request) -> Json<BadRequest> {
     Json(bad_request)
 }
 
+// curl -i -X DELETE 'http://127.0.0.1:8000/remove/1'
+#[delete("/remove/<id>")]
+fn remove_person(id: i32) -> Json<Response>{
+    let mut conn = pool().get().unwrap();
+
+    match person::remove_person(&mut conn, id) {
+        Ok(person) => Json(Response::Person(person)),
+        Err(err) => {
+            let bad_request = BadRequest {
+                code: 400,
+                description: format!("{err}"),
+            };
+            Json(Response::BadRequest(bad_request))
+        }
+
+    }
+
+}
+
 // curl http://127.0.0.1:8000/people/1
 #[get("/people/<id>")]
 fn people(id: i32) -> Json<Response> {
@@ -107,12 +126,12 @@ fn rocket() -> _ {
 
     let mut conn = pool().get().unwrap();
 
-    if let Err(_) = person::get_person(&mut conn, 1) {
+    if person::get_person(&mut conn, 1).is_err() {
         person::create(&mut conn, &p1).unwrap();
         person::create(&mut conn, &p2).unwrap();
     }
 
     rocket::build()
         .register("/", catchers![can_not_parse_json])
-        .mount("/", routes![people, post_person, modify_person])
+        .mount("/", routes![people, post_person, modify_person, remove_person])
 }

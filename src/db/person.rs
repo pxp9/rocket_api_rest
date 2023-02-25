@@ -11,6 +11,7 @@ pub enum DbError {
     DieselError(#[from] DieselError),
     PersonNotFoundError,
     ModifyError,
+    PersonNotDeletedError,
 }
 
 impl Display for DbError {
@@ -19,6 +20,7 @@ impl Display for DbError {
             DbError::DieselError(err) => write!(f, "{}", err),
             DbError::PersonNotFoundError => write!(f, "Person not found!"),
             DbError::ModifyError => write!(f, "Modify error!"),
+            DbError::PersonNotDeletedError => write!(f, "Can not delete person!"),
         }
     }
 }
@@ -41,6 +43,16 @@ pub fn get_person(conn: &mut PgConnection, id: i32) -> Result<Person, DbError> {
         Ok(vec[0].clone())
     } else {
         Err(DbError::PersonNotFoundError)
+    }
+}
+
+pub fn remove_person(conn: &mut PgConnection, id : i32)-> Result<Person , DbError>{
+    let vec = diesel::delete(person::table).filter(person::id.eq(id)).load::<Person>(conn)?;
+    
+    if vec.len() == 1 {
+        Ok(vec[0].clone())
+    } else {
+        Err(DbError::PersonNotDeletedError)
     }
 }
 
@@ -73,8 +85,8 @@ pub fn modify_person(
     };
 
     if vec.len() == 1 {
-        return Ok(vec[0].clone());
+        Ok(vec[0].clone())
     } else {
-        return Err(DbError::PersonNotFoundError);
+        Err(DbError::PersonNotFoundError)
     }
 }
