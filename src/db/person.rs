@@ -46,9 +46,11 @@ pub fn get_person(conn: &mut PgConnection, id: i32) -> Result<Person, DbError> {
     }
 }
 
-pub fn remove_person(conn: &mut PgConnection, id : i32)-> Result<Person , DbError>{
-    let vec = diesel::delete(person::table).filter(person::id.eq(id)).load::<Person>(conn)?;
-    
+pub fn remove_person(conn: &mut PgConnection, id: i32) -> Result<Person, DbError> {
+    let vec = diesel::delete(person::table)
+        .filter(person::id.eq(id))
+        .load::<Person>(conn)?;
+
     if vec.len() == 1 {
         Ok(vec[0].clone())
     } else {
@@ -64,24 +66,19 @@ pub fn modify_person(
 ) -> Result<Person, DbError> {
     let query = diesel::update(person::table).filter(person::id.eq(id));
 
-    let vec= match age_opt {
+    let vec = match age_opt {
         Some(age) => match name_opt {
-            Some(name) => {
-                query.set((person::age.eq(age), person::name.eq(name))).load::<Person>(conn)?
-            }
-            None => {
-                query.set(person::age.eq(age)).load(conn)?
-            }
+            Some(name) => query
+                .set((person::age.eq(age), person::name.eq(name)))
+                .load::<Person>(conn)?,
+            None => query.set(person::age.eq(age)).load(conn)?,
         },
         None => match name_opt {
-            Some(name) => {
-                query.set(person::name.eq(name)).load(conn)?
+            Some(name) => query.set(person::name.eq(name)).load(conn)?,
+            None => {
+                return Err(DbError::ModifyError);
             }
-            None => {    
-                return Err(DbError::PersonNotFoundError);
-            }
-        }
-        
+        },
     };
 
     if vec.len() == 1 {

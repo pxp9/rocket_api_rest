@@ -1019,7 +1019,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rocket-example"
+name = "rocket-api-rest"
 version = "0.1.0"
 dependencies = [
  "diesel",
