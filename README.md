@@ -50,3 +50,9 @@ note simple quotes in url because it has special characters !
 ```
 curl -i -X PUT 'http://127.0.0.1:8000/modify/1?name=Ayrat&age=30'
 ```
+
+### DELETE
+
+```
+curl -i -X DELETE 'http://127.0.0.1:8000/remove/1'
+```
