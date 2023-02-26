@@ -24,13 +24,15 @@ make diesel
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/people_db cargo run
 ```
 
-## It has 3 methods
+## It has 4 methods
 
 - 1 GET /people/id where id is person id from DB 
 
 - 1 POST /new_person json as a body
 
 - 1 PUT /modify/id?name=&age= where id is person id from DB
+
+- 1 DELETE /remove/id where id is person id from DB
 
 ## Examples to run requests in the API REST
 
