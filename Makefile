@@ -3,6 +3,7 @@ db:
   -e POSTGRES_DB=people_db \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
+	-v db-data:/data/db \
   postgres:13.4
 
 clippy:
