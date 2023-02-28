@@ -38,8 +38,8 @@ fn resource_already_exists(status: Status, req: &Request) -> Json<BadRequest> {
     Json(bad_request)
 }
 
-// curl -i -X PUT 'http://127.0.0.1:8000/modify/1?name=Peponcio'
-#[put("/modify/<id>?<name>&<age>")]
+// curl -i -X PUT 'http://127.0.0.1:8000/1?name=Peponcio'
+#[put("/<id>?<name>&<age>")]
 fn modify_person(id: i32, name: Option<String>, age: Option<i32>) -> Result<Json<Person>, Status> {
     let mut conn = pool().get().unwrap();
 
@@ -49,8 +49,8 @@ fn modify_person(id: i32, name: Option<String>, age: Option<i32>) -> Result<Json
     }
 }
 
-// curl -i -X DELETE 'http://127.0.0.1:8000/remove/1'
-#[delete("/remove/<id>")]
+// curl -i -X DELETE 'http://127.0.0.1:8000/1'
+#[delete("/<id>")]
 fn remove_person(id: i32) -> Result<Json<Person>, Status> {
     let mut conn = pool().get().unwrap();
 
@@ -60,8 +60,8 @@ fn remove_person(id: i32) -> Result<Json<Person>, Status> {
     }
 }
 
-// curl http://127.0.0.1:8000/people/1
-#[get("/people/<id>")]
+// curl http://127.0.0.1:8000/1
+#[get("/<id>")]
 fn people(id: i32) -> Result<Json<Person>, Status> {
     let mut conn = pool().get().unwrap();
 
